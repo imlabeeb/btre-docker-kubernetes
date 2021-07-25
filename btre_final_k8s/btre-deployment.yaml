@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: btre-deployment
+  labels:
+    app: btre
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: btre
+  template:
+    metadata:
+      labels:
+        app: btre
+    spec:
+      containers:
+      - name: btre-container
+        imagePullPolicy: IfNotPresent
+        image: imlabeeb/k8s:v4
+        command: ["gunicorn", "btre.wsgi:application", "--bind" ,"0.0.0.0:8000"]
+        ports:
+        - containerPort: 8000
+      # imagePullSecrets:
+      # - name: regcred
+        resources:
+          limits:
+            memory: 128Mi
+            cpu: "0.4"
+          requests:
+            memory: 64Mi
+            cpu: "0.2" 
+        env:
+          - name: SQL_ENGINE
+            valueFrom:
+              configMapKeyRef:
+                name: btre-configmap
+                key: SQL_ENGINE
+
+          - name: DEBUG
+            valueFrom:
+              configMapKeyRef:
+                name: btre-configmap
+                key: SQL_ENGINE
+
+          - name: DJANGO_ALLOWED_HOSTS
+            valueFrom:
+              configMapKeyRef:
+                name: btre-configmap
+                key: DJANGO_ALLOWED_HOSTS
+
+          - name: SQL_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: btre-configmap
+                key: SQL_DATABASE
+
+          - name: SQL_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: btre-configmap
+                key: SQL_HOST
+            
+          - name: SQL_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: btre-configmap
+                key: SQL_PORT
+
+          - name: SQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: sql-credentials
+                key: user                
+
+          - name: SQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sql-credentials
+                key: password
+
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: sql-credentials
+                key: secret-key
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  btre-service
+spec:
+  selector:
+    app:  btre
+  ports:
+  - port: 9000
+    targetPort: 8000
+  type:  LoadBalancer

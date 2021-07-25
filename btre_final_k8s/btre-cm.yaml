@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: btre-configmap
+data:
+  DJANGO_ALLOWED_HOSTS: "*"
+  STATIC_ENDPOINT_URL: "https://your_space_name.space_region.digitaloceanspaces.com"
+  STATIC_BUCKET_NAME: "your_space_name"
+  DJANGO_LOGLEVEL: "info"
+  DEBUG: "True"
+  SQL_ENGINE: "django.db.backends.postgresql"
+  SQL_DATABASE: "btre"
+  SQL_HOST: "192.168.1.8"
+  SQL_PORT: "5432"

@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: btre-ingress
+  labels:
+    app: btre
+spec:
+  rules:
+  - host: dashboard.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          serviceName: btre-service
+          servicePort: 9000
+      # - pathType: Prefix
+      #   path: "/new"
+      #   backend:
+      #     serviceName: btre-service
+      #     servicePort: 9000         
